@@ -76,33 +76,39 @@ $weight = 400; // fixed — always slab1
 
 // ---- Define 14 variants ----
 $variants = [
-    // Clean variants (no sticker)
-    ['type' => 'clean', 'border' => 'maroon', 'label' => 'Dark Maroon',  'sticker' => null, 'shift' => 0],
-    ['type' => 'clean', 'border' => 'navy',   'label' => 'Deep Navy',    'sticker' => null, 'shift' => 0],
-    ['type' => 'clean', 'border' => 'forest', 'label' => 'Forest Green', 'sticker' => null, 'shift' => 0],
-    ['type' => 'clean', 'border' => 'white',  'label' => 'Pure White',   'sticker' => null, 'shift' => 0],
+    // Clean variants (no sticker) — 4 different colors
+    ['type' => 'clean', 'border' => 'maroon',   'label' => 'Dark Maroon',    'sticker' => null, 'shift' => 0],
+    ['type' => 'clean', 'border' => 'navy',      'label' => 'Deep Navy',      'sticker' => null, 'shift' => 0],
+    ['type' => 'clean', 'border' => 'teal',      'label' => 'Teal',           'sticker' => null, 'shift' => 0],
+    ['type' => 'clean', 'border' => 'white',     'label' => 'Pure White',     'sticker' => null, 'shift' => 0],
 
-    // Sticker variants
-    ['type' => 'sticker', 'border' => 'maroon', 'label' => 'Maroon + Free Delivery', 'sticker' => 'free_delivery', 'shift' => 0],
-    ['type' => 'sticker', 'border' => 'navy',   'label' => 'Navy + Best Seller',     'sticker' => 'best_seller',   'shift' => 0],
-    ['type' => 'sticker', 'border' => 'forest', 'label' => 'Green + Special Offer',  'sticker' => 'special_offer', 'shift' => 0],
-    ['type' => 'sticker', 'border' => 'white',  'label' => 'White + Best Deal',      'sticker' => 'best_deal',     'shift' => 0],
-    ['type' => 'sticker', 'border' => 'maroon', 'label' => 'Maroon + Best Quality',  'sticker' => 'best_quality',  'shift' => 0],
-    ['type' => 'sticker', 'border' => 'navy',   'label' => 'Navy + Free Delivery',   'sticker' => 'free_delivery', 'shift' => 0],
-    ['type' => 'sticker', 'border' => 'forest', 'label' => 'Green + Best Seller',    'sticker' => 'best_seller',   'shift' => 0],
-    ['type' => 'sticker', 'border' => 'white',  'label' => 'White + Special Offer',  'sticker' => 'special_offer', 'shift' => 0],
+    // Sticker variants — 8 different colors
+    ['type' => 'sticker', 'border' => 'maroon',   'label' => 'Maroon + Free Delivery',   'sticker' => 'free_delivery', 'shift' => 0],
+    ['type' => 'sticker', 'border' => 'navy',     'label' => 'Navy + Best Seller',       'sticker' => 'best_seller',   'shift' => 0],
+    ['type' => 'sticker', 'border' => 'forest',   'label' => 'Forest + Special Offer',   'sticker' => 'special_offer', 'shift' => 0],
+    ['type' => 'sticker', 'border' => 'purple',   'label' => 'Purple + Best Deal',       'sticker' => 'best_deal',     'shift' => 0],
+    ['type' => 'sticker', 'border' => 'charcoal', 'label' => 'Charcoal + Best Quality',  'sticker' => 'best_quality',  'shift' => 0],
+    ['type' => 'sticker', 'border' => 'rust',     'label' => 'Rust + Free Delivery',     'sticker' => 'free_delivery', 'shift' => 0],
+    ['type' => 'sticker', 'border' => 'pink',     'label' => 'Pink + Best Seller',       'sticker' => 'best_seller',   'shift' => 0],
+    ['type' => 'sticker', 'border' => 'black',    'label' => 'Black + Special Offer',    'sticker' => 'special_offer', 'shift' => 0],
 
     // Frame shift variants
-    ['type' => 'shift', 'border' => 'maroon', 'label' => 'Left Shift',  'sticker' => null, 'shift' => -60],
-    ['type' => 'shift', 'border' => 'navy',   'label' => 'Right Shift', 'sticker' => null, 'shift' => 60],
+    ['type' => 'shift', 'border' => 'teal',    'label' => 'Teal Left Shift',    'sticker' => null, 'shift' => -60],
+    ['type' => 'shift', 'border' => 'charcoal','label' => 'Charcoal Right Shift','sticker' => null, 'shift' => 60],
 ];
 
 // ---- Border colors ----
 $colors = [
-    'maroon' => [128, 0,   0  ],
-    'navy'   => [0,   0,   128],
-    'forest' => [20,  83,  45 ],
-    'white'  => [255, 255, 255],
+    'maroon'  => [128, 0,   0  ],
+    'navy'    => [0,   0,   128],
+    'forest'  => [20,  83,  45 ],
+    'white'   => [255, 255, 255],
+    'purple'  => [88,  28,  135],
+    'charcoal'=> [30,  30,  30 ],
+    'teal'    => [13,  148, 136],
+    'rust'    => [180, 60,  20 ],
+    'pink'    => [190, 24,  93 ],
+    'black'   => [0,   0,   0  ],
 ];
 
 // ---- Process each variant ----
