@@ -77,19 +77,7 @@
                         <input type="file" name="image" id="fileInput" accept=".jpg,.jpeg,.png,.webp" hidden>
                     </div>
 
-                    <!-- WEIGHT INPUT -->
-                    <div class="weight-box">
-                        <label class="weight-label">Product Weight <span>(for shipping estimate)</span></label>
-                        <div class="weight-input-wrap">
-                            <input type="number" name="weight" id="weightInput" class="weight-input" placeholder="Enter weight" min="1" max="5000" value="200">
-                            <span class="weight-unit">grams</span>
-                        </div>
-                        <div class="shipping-estimate" id="shippingEstimate">
-                            <span class="estimate-label">Estimated Shipping:</span>
-                            <span class="estimate-local">Local: ₹35–₹45</span>
-                            <span class="estimate-national">National: ₹60–₹70</span>
-                        </div>
-                    </div>
+                    
 
                     <!-- TIPS -->
                     <div class="tips-box">

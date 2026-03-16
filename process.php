@@ -72,7 +72,7 @@ $outputDir  = OUTPUTS_PATH . $sessionId . '/';
 mkdir($outputDir, 0755, true);
 
 // ---- Get weight for shipping estimate ----
-$weight = max(1, min(5000, (int)($_POST['weight'] ?? 200)));
+$weight = 200; // fixed — always slab1
 
 // ---- Define 14 variants ----
 $variants = [

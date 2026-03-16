@@ -67,30 +67,6 @@ removeBtn.addEventListener('click', (e) => {
     generateBtn.disabled = true;
 });
 
-// ---- Shipping estimate calculator ----
-weightInput.addEventListener('input', updateEstimate);
-
-function updateEstimate() {
-    const weight = parseInt(weightInput.value) || 0;
-    const localEl    = document.querySelector('.estimate-local');
-    const nationalEl = document.querySelector('.estimate-national');
-
-    let local, national;
-
-    if (weight <= 500) {
-        local    = '₹35 – ₹45';
-        national = '₹60 – ₹70';
-    } else if (weight <= 1000) {
-        local    = '₹55 – ₹65';
-        national = '₹90 – ₹100';
-    } else {
-        local    = '₹75 – ₹85';
-        national = '₹120 – ₹140';
-    }
-
-    localEl.textContent    = 'Local: ' + local;
-    nationalEl.textContent = 'National: ' + national;
-}
 
 // ---- Generate button loading state ----
 document.getElementById('uploadForm').addEventListener('submit', () => {
