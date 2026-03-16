@@ -67,9 +67,12 @@ $shift   = array_filter($files, fn($f) => $f['type'] === 'shift');
             </div>
             <div class="result-hero-right">
                 <button class="select-all-btn" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
-                <a href="download.php?session=<?= e($sessionId) ?>&type=zip&token=<?= e(generateDownloadToken($sessionId . '/all')) ?>" class="download-zip-btn" id="downloadZipBtn">
-                    ⬇ Download ZIP
-                </a>
+<button class="download-selected-btn" id="downloadSelectedBtn" onclick="downloadSelected()" disabled>
+    ⬇ Download Selected
+</button>
+<a href="download.php?session=<?= e($sessionId) ?>&type=zip&token=<?= e(generateDownloadToken($sessionId . '/all')) ?>" class="download-zip-btn">
+    ⬇ Download All ZIP
+</a>
             </div>
         </div>
     </div>
@@ -156,6 +159,66 @@ function toggleSelectAll() {
         }
     });
     document.getElementById('selectAllBtn').textContent = allSelected ? 'Deselect All' : 'Select All';
+    updateDownloadSelectedBtn();
+}
+
+// ---- Update download selected button ----
+function updateDownloadSelectedBtn() {
+    const checked = document.querySelectorAll('.img-check:checked');
+    const btn     = document.getElementById('downloadSelectedBtn');
+    btn.disabled  = checked.length === 0;
+    btn.textContent = checked.length > 0
+        ? '⬇ Download Selected (' + checked.length + ')'
+        : '⬇ Download Selected';
+}
+
+// ---- Listen for individual checkbox changes ----
+document.querySelectorAll('.img-check').forEach(cb => {
+    cb.addEventListener('change', updateDownloadSelectedBtn);
+});
+
+// ---- Download selected as ZIP ----
+function downloadSelected() {
+    const checked  = document.querySelectorAll('.img-check:checked');
+    if (checked.length === 0) return;
+
+    const filenames = Array.from(checked).map(cb => cb.value);
+    const session   = '<?= e($sessionId) ?>';
+
+    // Create form and POST to download.php
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'download.php';
+
+    const typeInput = document.createElement('input');
+    typeInput.type  = 'hidden';
+    typeInput.name  = 'type';
+    typeInput.value = 'selected_zip';
+    form.appendChild(typeInput);
+
+    const sessionInput = document.createElement('input');
+    sessionInput.type  = 'hidden';
+    sessionInput.name  = 'session';
+    sessionInput.value = session;
+    form.appendChild(sessionInput);
+
+    const tokenInput = document.createElement('input');
+    tokenInput.type  = 'hidden';
+    tokenInput.name  = 'token';
+    tokenInput.value = '<?= e(generateDownloadToken($sessionId . "/selected")) ?>';
+    form.appendChild(tokenInput);
+
+    filenames.forEach(f => {
+        const input = document.createElement('input');
+        input.type  = 'hidden';
+        input.name  = 'files[]';
+        input.value = f;
+        form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
 }
 </script>
 </body>

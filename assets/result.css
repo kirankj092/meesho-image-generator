@@ -78,6 +78,25 @@
 }
 .download-zip-btn:hover { background: var(--green-dark); }
 
+.download-selected-btn {
+    padding: 10px 20px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.download-selected-btn:hover:not(:disabled) { background: #ea6c00; }
+.download-selected-btn:disabled {
+    background: var(--gray-200);
+    color: var(--gray-400);
+    cursor: not-allowed;
+}
+
 /* TABS */
 .result-main { padding: 32px 0 60px; }
 .tabs {

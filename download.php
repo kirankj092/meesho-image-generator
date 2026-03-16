@@ -62,6 +62,70 @@ if ($type !== 'zip') {
 }
 
 // ============================================================
+// SELECTED FILES ZIP DOWNLOAD
+// ============================================================
+if ($type === 'selected_zip') {
+
+    $token   = $_POST['token']   ?? '';
+    $session = $_POST['session'] ?? '';
+    $files   = $_POST['files']   ?? [];
+
+    // Validate session
+    if (!preg_match('/^[a-f0-9]{16}$/', $session)) {
+        http_response_code(400);
+        die('Invalid request.');
+    }
+
+    // Verify token
+    $verified = verifyDownloadToken($token);
+    if (!$verified) {
+        http_response_code(403);
+        die('Invalid or expired download link.');
+    }
+
+    $sessionDir = OUTPUTS_PATH . $session . '/';
+
+    if (!class_exists('ZipArchive')) {
+        http_response_code(500);
+        die('ZIP not supported.');
+    }
+
+    $zipPath = OUTPUTS_PATH . $session . '_selected.zip';
+    $zip     = new ZipArchive();
+
+    if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        http_response_code(500);
+        die('Could not create ZIP.');
+    }
+
+    foreach ($files as $f) {
+        $filename = basename($f); // prevent path traversal
+        $filepath = $sessionDir . $filename;
+        if (file_exists($filepath)) {
+            $zip->addFile($filepath, 'meesho_selected/' . $filename);
+        }
+    }
+
+    $zip->close();
+
+    ob_end_clean();
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="meesho_selected_' . $session . '.zip"');
+    header('Content-Length: ' . filesize($zipPath));
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+    header('Pragma: no-cache');
+
+    $handle = fopen($zipPath, 'rb');
+    while (!feof($handle)) {
+        echo fread($handle, 8192);
+        flush();
+    }
+    fclose($handle);
+    @unlink($zipPath);
+    exit;
+}
+
+// ============================================================
 // ZIP DOWNLOAD — all files in session
 // ============================================================
 
