@@ -1,89 +1,37 @@
-(Get-Item download.php).length<?php
+<?php
 require_once 'config.php';
 
-// ---- Get parameters ----
-$type      = $_GET['type']    ?? 'single';
-$session   = $_GET['session'] ?? '';
-$token     = $_GET['token']   ?? '';
-$file      = $_GET['file']    ?? '';
+if (ob_get_level()) ob_end_clean();
 
-// ---- Validate session ID (alphanumeric only) ----
+$type    = $_GET['type']    ?? $_POST['type']    ?? 'single';
+$session = $_GET['session'] ?? $_POST['session'] ?? '';
+$token   = $_GET['token']   ?? $_POST['token']   ?? '';
+$file    = $_GET['file']    ?? '';
+
 if (!preg_match('/^[a-f0-9]{16}$/', $session)) {
     http_response_code(400);
     die('Invalid request.');
 }
 
-// ---- Session folder path ----
 $sessionDir = OUTPUTS_PATH . $session . '/';
 
-// ---- Check session folder exists ----
 if (!is_dir($sessionDir)) {
     http_response_code(404);
     die('Files not found or expired.');
 }
 
 // ============================================================
-// SINGLE FILE DOWNLOAD
-// ============================================================
-if ($type !== 'zip') {
-
-    // Verify token
-    $verified = verifyDownloadToken($token);
-    if (!$verified) {
-        http_response_code(403);
-        die('Invalid or expired download link.');
-    }
-
-    // Validate filename (no path traversal)
-    $filename = basename($file);
-    $filepath = $sessionDir . $filename;
-
-    if (!file_exists($filepath)) {
-        http_response_code(404);
-        die('File not found.');
-    }
-
-    // Log download
-    try {
-        $db   = getDB();
-        $stmt = $db->prepare("INSERT INTO usage_log (session_id, ip_address, action, filename) VALUES (?, ?, 'download_free', ?)");
-        $stmt->execute([$session, $_SERVER['REMOTE_ADDR'], $filename]);
-    } catch (Exception $e) {
-        error_log('Download log failed: ' . $e->getMessage());
-    }
-
-    // Serve file
-    header('Content-Type: image/jpeg');
-    header('Content-Disposition: attachment; filename="meesho_' . $filename . '"');
-    header('Content-Length: ' . filesize($filepath));
-    header('Cache-Control: no-cache');
-    readfile($filepath);
-    exit;
-}
-
-// ============================================================
-// SELECTED FILES ZIP DOWNLOAD
+// SELECTED FILES ZIP
 // ============================================================
 if ($type === 'selected_zip') {
 
-    $token   = $_POST['token']   ?? '';
-    $session = $_POST['session'] ?? '';
-    $files   = $_POST['files']   ?? [];
+    $files = $_POST['files'] ?? [];
 
-    // Validate session
-    if (!preg_match('/^[a-f0-9]{16}$/', $session)) {
-        http_response_code(400);
-        die('Invalid request.');
-    }
-
-    // Verify token
     $verified = verifyDownloadToken($token);
     if (!$verified) {
         http_response_code(403);
-        die('Invalid or expired download link.');
+        die('Invalid or expired link.');
     }
-
-    $sessionDir = OUTPUTS_PATH . $session . '/';
 
     if (!class_exists('ZipArchive')) {
         http_response_code(500);
@@ -99,7 +47,7 @@ if ($type === 'selected_zip') {
     }
 
     foreach ($files as $f) {
-        $filename = basename($f); // prevent path traversal
+        $filename = basename($f);
         $filepath = $sessionDir . $filename;
         if (file_exists($filepath)) {
             $zip->addFile($filepath, 'meesho_selected/' . $filename);
@@ -110,7 +58,7 @@ if ($type === 'selected_zip') {
 
     ob_end_clean();
     header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="meesho_selected_' . $session . '.zip"');
+    header('Content-Disposition: attachment; filename="meesho_selected.zip"');
     header('Content-Length: ' . filesize($zipPath));
     header('Cache-Control: no-store, no-cache, must-revalidate');
     header('Pragma: no-cache');
@@ -126,62 +74,104 @@ if ($type === 'selected_zip') {
 }
 
 // ============================================================
-// ZIP DOWNLOAD — all files in session
+// ALL FILES ZIP
 // ============================================================
+if ($type === 'zip') {
 
-// Verify token
+    $verified = verifyDownloadToken($token);
+    if (!$verified) {
+        http_response_code(403);
+        die('Invalid or expired link.');
+    }
+
+    if (!class_exists('ZipArchive')) {
+        http_response_code(500);
+        die('ZIP not supported.');
+    }
+
+    $allFiles = glob($sessionDir . '*.jpg');
+
+    if (empty($allFiles)) {
+        http_response_code(404);
+        die('No files found.');
+    }
+
+    $zipPath = OUTPUTS_PATH . $session . '_download.zip';
+    $zip     = new ZipArchive();
+
+    if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        http_response_code(500);
+        die('Could not create ZIP.');
+    }
+
+    foreach ($allFiles as $f) {
+        $zip->addFile($f, 'meesho_images/' . basename($f));
+    }
+
+    $zip->close();
+
+    try {
+        $db   = getDB();
+        $stmt = $db->prepare("INSERT INTO usage_log (session_id, ip_address, action) VALUES (?, ?, 'download_pro')");
+        $stmt->execute([$session, $_SERVER['REMOTE_ADDR']]);
+    } catch (Exception $e) {
+        error_log('ZIP log failed: ' . $e->getMessage());
+    }
+
+    ob_end_clean();
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="meesho_images_' . $session . '.zip"');
+    header('Content-Length: ' . filesize($zipPath));
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+    header('Pragma: no-cache');
+
+    $handle = fopen($zipPath, 'rb');
+    while (!feof($handle)) {
+        echo fread($handle, 8192);
+        flush();
+    }
+    fclose($handle);
+    @unlink($zipPath);
+    exit;
+}
+
+// ============================================================
+// SINGLE FILE DOWNLOAD
+// ============================================================
 $verified = verifyDownloadToken($token);
 if (!$verified) {
     http_response_code(403);
-    die('Invalid or expired download link.');
+    die('Invalid or expired link.');
 }
 
-// Check ZipArchive is available
-if (!class_exists('ZipArchive')) {
-    http_response_code(500);
-    die('ZIP not supported on this server.');
-}
+$filename = basename($file);
+$filepath = $sessionDir . $filename;
 
-// Get all JPG files in session folder
-$files = glob($sessionDir . '*.jpg');
-
-if (empty($files)) {
+if (!file_exists($filepath)) {
     http_response_code(404);
-    die('No files found.');
+    die('File not found.');
 }
 
-// Create ZIP in temp location
-$zipPath = OUTPUTS_PATH . $session . '_download.zip';
-$zip     = new ZipArchive();
-
-if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-    http_response_code(500);
-    die('Could not create ZIP file.');
-}
-
-foreach ($files as $f) {
-    $zip->addFile($f, 'meesho_images/' . basename($f));
-}
-
-$zip->close();
-
-// Log ZIP download
 try {
     $db   = getDB();
-    $stmt = $db->prepare("INSERT INTO usage_log (session_id, ip_address, action) VALUES (?, ?, 'download_pro')");
-    $stmt->execute([$session, $_SERVER['REMOTE_ADDR']]);
+    $stmt = $db->prepare("INSERT INTO usage_log (session_id, ip_address, action, filename) VALUES (?, ?, 'download_free', ?)");
+    $stmt->execute([$session, $_SERVER['REMOTE_ADDR'], $filename]);
 } catch (Exception $e) {
-    error_log('ZIP log failed: ' . $e->getMessage());
+    error_log('Download log failed: ' . $e->getMessage());
 }
 
-// Serve ZIP
-header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="meesho_images_' . $session . '.zip"');
-header('Content-Length: ' . filesize($zipPath));
-header('Cache-Control: no-cache');
-readfile($zipPath);
+ob_end_clean();
+header('Content-Type: image/jpeg');
+header('Content-Disposition: attachment; filename="meesho_' . $filename . '"');
+header('Content-Length: ' . filesize($filepath));
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
-// Cleanup ZIP after serving
-
-@unlink($zipPath);
+$handle = fopen($filepath, 'rb');
+while (!feof($handle)) {
+    echo fread($handle, 8192);
+    flush();
+}
+fclose($handle);
 exit;
