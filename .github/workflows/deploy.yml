@@ -14,9 +14,9 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.ftp://145.79.212.169 }}
+          username: ${{ secrets.u323182147 }}
+          password: ${{ secrets.Chennabasappa@123 }}
           local-dir: ./
           server-dir: /public_html/apps/meesho-image-generator/
           exclude: |
