@@ -11,7 +11,6 @@ Options -ExecCGI
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
 </IfModule>
 
 # ---- Block direct access to PHP config files ----
@@ -26,23 +25,8 @@ Options -ExecCGI
     Deny from all
 </FilesMatch>
 
-# ---- Block shell / dangerous extensions ----
+# ---- Block dangerous extensions ----
 <FilesMatch "\.(sh|bash|py|rb|pl|cgi|sql|bak|log|swp)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
-
-# ---- Clean URLs ----
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /apps/meesho-image-generator/
-
-    # Force HTTPS
-    RewriteCond %{HTTPS} off
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-    # Remove .php extension
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME}\.php -f
-    RewriteRule ^([^\.]+)$ $1.php [NC,L]
-</IfModule>
