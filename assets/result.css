@@ -259,7 +259,7 @@
     padding: 2px 8px;
     border-radius: 999px;
 }
-.ship-local    { background: #fef3c7; color: #92400e; }
+
 .ship-national { background: var(--green-light); color: var(--green-dark); }
 
 /* New upload button */

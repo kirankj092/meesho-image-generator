@@ -13,13 +13,7 @@ $sessionId = $data['sessionId'];
 $weight    = $data['weight'];
 
 // ---- Shipping estimate ----
-if ($weight <= 500) {
-    $shipping = ['local' => '₹35–₹45', 'national' => '₹60–₹70'];
-} elseif ($weight <= 1000) {
-    $shipping = ['local' => '₹55–₹65', 'national' => '₹90–₹100'];
-} else {
-    $shipping = ['local' => '₹75–₹85', 'national' => '₹120–₹140'];
-}
+i$shipping = ['national' => '₹50–₹60'];
 
 // ---- Separate by type ----
 $clean   = array_filter($files, fn($f) => $f['type'] === 'clean');
@@ -61,7 +55,7 @@ $shift   = array_filter($files, fn($f) => $f['type'] === 'shift');
                 <h1 class="result-title">Your Optimised Images Are Ready</h1>
                 <div class="shipping-info">
                     <span class="shipping-label">Estimated Shipping:</span>
-                    <span class="shipping-local">Local: <?= e($shipping['local']) ?></span>
+                   
                     <span class="shipping-national">National: <?= e($shipping['national']) ?></span>
                 </div>
             </div>
