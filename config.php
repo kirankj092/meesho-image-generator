@@ -19,7 +19,7 @@ define('APP_VERSION', '1.0.0');
 define('DB_HOST',    'localhost');
 define('DB_NAME',    'u323182147_meesho_tool');
 define('DB_USER',    'u323182147_meesho_user');
-define('DB_PASS',    'Chennabasappa@123');
+define('DB_PASS',    'PWD');
 define('DB_CHARSET', 'utf8mb4');
 
 // ============================================================
