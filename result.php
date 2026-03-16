@@ -13,7 +13,7 @@ $sessionId = $data['sessionId'];
 $weight    = $data['weight'];
 
 // ---- Shipping estimate ----
-i$shipping = ['national' => '₹50–₹60'];
+$shipping = ['national' => '₹50–₹60'];
 
 // ---- Separate by type ----
 $clean   = array_filter($files, fn($f) => $f['type'] === 'clean');
@@ -106,7 +106,7 @@ $shift   = array_filter($files, fn($f) => $f['type'] === 'shift');
                 <div class="image-info">
                     <div class="image-label"><?= e($file['label']) ?></div>
                     <div class="image-shipping">
-                        <span class="ship-local"><?= e($shipping['local']) ?></span>
+                        
                         <span class="ship-national"><?= e($shipping['national']) ?></span>
                     </div>
                 </div>
