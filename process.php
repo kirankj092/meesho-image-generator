@@ -217,3 +217,4 @@ function drawSticker(GdImage $canvas, string $type): void {
     $textY = $sy + 20;
     imagestring($canvas, $font, $textX, $textY, $s['text'], $white);
 }
+

@@ -73,3 +73,4 @@ document.getElementById('uploadForm').addEventListener('submit', () => {
     generateBtn.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-text">Generating... Please wait</span>';
     generateBtn.disabled = true;
 });
+
