@@ -1,0 +1,26 @@
+# NEVER push real config (has DB credentials)
+config.php
+
+# Runtime folders — created manually on Hostinger
+/uploads/*
+/outputs/*
+
+# Keep folder structure but ignore contents
+!/uploads/.htaccess
+!/uploads/.gitkeep
+!/outputs/.htaccess
+!/outputs/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+*.swp
+
+# PHP logs
+*.log
+
+# GitHub Actions (not needed anymore)
+.github/
