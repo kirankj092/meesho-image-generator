@@ -1,11 +1,6 @@
-# ============================================================
-# Meesho Image Generator — Root .htaccess
-# ============================================================
-
 Options -Indexes
 Options -ExecCGI
 
-# ---- Security Headers ----
 <IfModule mod_headers.c>
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-Content-Type-Options "nosniff"
@@ -13,20 +8,28 @@ Options -ExecCGI
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# ---- Block direct access to PHP config files ----
 <FilesMatch "^(config\.php|config\.sample\.php|\.env)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# ---- Block access to dot files ----
-<FilesMatch "^\.(git|htaccess|htpasswd|DS_Store)">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# ---- Block dangerous extensions ----
 <FilesMatch "\.(sh|bash|py|rb|pl|cgi|sql|bak|log|swp)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /apps/meesho-image-generator/
+
+    # Force HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Skip real files and folders
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Remove .php extension
+    RewriteRule ^([^/]+)/?$ $1.php [L]
+</IfModule>

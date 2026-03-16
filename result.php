@@ -41,7 +41,7 @@ $shift   = array_filter($files, fn($f) => $f['type'] === 'shift');
                 <span class="logo-icon">⚡</span>
                 <span class="logo-text">Meesho <strong>Image Generator</strong></span>
             </div>
-            <a href="index.php" class="new-upload-btn">+ New Upload</a>
+            <a href="index" class="new-upload-btn">+ New Upload</a>
         </div>
     </div>
 </header>
@@ -116,7 +116,7 @@ $shift   = array_filter($files, fn($f) => $f['type'] === 'shift');
 
         <!-- BACK BUTTON -->
         <div class="back-wrap">
-            <a href="index.php" class="back-btn">← Generate New Images</a>
+            <a href="index" class="back-btn">← Generate New Images</a>
         </div>
 
     </div>

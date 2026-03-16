@@ -3,7 +3,7 @@ require_once 'config.php';
 
 // ---- Security checks ----
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php');
+    header('Location: index');
     exit;
 }
 
@@ -177,7 +177,7 @@ $_SESSION['generated'] = [
     'timestamp' => time(),
 ];
 
-header('Location: result.php');
+header('Location: result');
 exit;
 
 // ============================================================
