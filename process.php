@@ -217,4 +217,41 @@ function drawSticker(GdImage $canvas, string $type): void {
     $textY = $sy + 20;
     imagestring($canvas, $font, $textX, $textY, $s['text'], $white);
 }
+// ============================================================
+// CLEANUP — Delete output folders older than 1 hour
+// ============================================================
+function cleanupOldSessions(): void {
+    $outputsDir = OUTPUTS_PATH;
+    $maxAge     = 3600; // 1 hour in seconds
+    $now        = time();
+
+    if (!is_dir($outputsDir)) return;
+
+    $folders = glob($outputsDir . '*', GLOB_ONLYDIR);
+
+    foreach ($folders as $folder) {
+        $age = $now - filemtime($folder);
+        if ($age > $maxAge) {
+            // Delete all files inside folder
+            $files = glob($folder . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) @unlink($file);
+            }
+            // Delete folder itself
+            @rmdir($folder);
+        }
+    }
+
+    // Also delete any leftover ZIP files
+    $zips = glob($outputsDir . '*.zip');
+    foreach ($zips as $zip) {
+        $age = $now - filemtime($zip);
+        if ($age > $maxAge) @unlink($zip);
+    }
+}
+
+// Run cleanup on every 1 in 5 requests — lightweight
+if (rand(1, 5) === 1) {
+    cleanupOldSessions();
+}
 
