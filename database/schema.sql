@@ -8,7 +8,7 @@ SET time_zone = '+05:30';
 -- ============================================================
 -- TABLE 1: categories (parent categories)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS categories 
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(100) NOT NULL,
     slug        VARCHAR(100) NOT NULL UNIQUE,
