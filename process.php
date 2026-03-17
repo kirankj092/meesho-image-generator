@@ -66,46 +66,6 @@ if (!$src) {
 $srcW = imagesx($src);
 $srcH = imagesy($src);
 
-// ============================================================
-// SMART AUTO BORDER — detects image brightness and picks best border
-// ============================================================
-function getImageBrightness(GdImage $img, int $w, int $h): float {
-    $totalBrightness = 0;
-    $samples         = 0;
-    $step            = max(1, (int)($w / 50)); // sample 50x50 grid
-
-    for ($x = 0; $x < $w; $x += $step) {
-        for ($y = 0; $y < $h; $y += $step) {
-            $rgb   = imagecolorat($img, $x, $y);
-            $r     = ($rgb >> 16) & 0xFF;
-            $g     = ($rgb >> 8)  & 0xFF;
-            $b     = $rgb         & 0xFF;
-            $totalBrightness += (0.299 * $r + 0.587 * $g + 0.114 * $b);
-            $samples++;
-        }
-    }
-
-    return $samples > 0 ? $totalBrightness / $samples : 128;
-}
-
-// ---- Detect brightness and pick best border color ----
-$brightness = getImageBrightness($src, $srcW, $srcH);
-
-if ($brightness > 180) {
-    // LIGHT image → use dark border
-    $autoBorder      = 'black';
-    $autoStickBorder = 'charcoal';
-} elseif ($brightness < 80) {
-    // DARK image → use light border
-    $autoBorder      = 'lightgray';
-    $autoStickBorder = 'lightgray';
-} else {
-    // MIXED image → use dark red
-    $autoBorder      = 'darkred';
-    $autoStickBorder = 'darkred';
-}
-
-
 // ---- Session folder for this upload ----
 $sessionId  = bin2hex(random_bytes(8));
 $outputDir  = OUTPUTS_PATH . $sessionId . '/';
@@ -114,37 +74,43 @@ mkdir($outputDir, 0755, true);
 // ---- Get weight for shipping estimate ----
 $weight = 400; // fixed — always slab1
 
-// ---- Define 12 variants ----
+// ---- Define 14 variants ----
 $variants = [
-    // Clean variants
-    ['type' => 'clean', 'border' => $autoBorder, 'label' => 'Auto Optimised 1', 'sticker' => null, 'shift' => 0],
-    ['type' => 'clean', 'border' => 'darkred',   'label' => 'Dark Red',         'sticker' => null, 'shift' => 0],
-    ['type' => 'clean', 'border' => 'black',      'label' => 'Pure Black',       'sticker' => null, 'shift' => 0],
-    ['type' => 'clean', 'border' => 'charcoal',   'label' => 'Charcoal',         'sticker' => null, 'shift' => 0],
+    // Clean variants (no sticker) — 4 different colors
+    ['type' => 'clean', 'border' => 'maroon',   'label' => 'Dark Maroon',    'sticker' => null, 'shift' => 0],
+    ['type' => 'clean', 'border' => 'navy',      'label' => 'Deep Navy',      'sticker' => null, 'shift' => 0],
+    ['type' => 'clean', 'border' => 'teal',      'label' => 'Teal',           'sticker' => null, 'shift' => 0],
+    ['type' => 'clean', 'border' => 'white',     'label' => 'Pure White',     'sticker' => null, 'shift' => 0],
 
-    // Sticker variants
-    ['type' => 'sticker', 'border' => $autoStickBorder, 'label' => 'Auto + Free Delivery',   'sticker' => 'free_delivery', 'shift' => 0],
-    ['type' => 'sticker', 'border' => $autoStickBorder, 'label' => 'Auto + Best Seller',     'sticker' => 'best_seller',   'shift' => 0],
-    ['type' => 'sticker', 'border' => $autoStickBorder, 'label' => 'Auto + Special Offer',   'sticker' => 'special_offer', 'shift' => 0],
-    ['type' => 'sticker', 'border' => $autoStickBorder, 'label' => 'Auto + Best Deal',       'sticker' => 'best_deal',     'shift' => 0],
-    ['type' => 'sticker', 'border' => 'black',           'label' => 'Black + Best Quality',   'sticker' => 'best_quality',  'shift' => 0],
-    ['type' => 'sticker', 'border' => 'charcoal',        'label' => 'Charcoal + Free Delivery','sticker' => 'free_delivery','shift' => 0],
-    ['type' => 'sticker', 'border' => 'black',           'label' => 'Black + Best Seller',    'sticker' => 'best_seller',   'shift' => 0],
-    ['type' => 'sticker', 'border' => 'charcoal',        'label' => 'Charcoal + Special Offer','sticker' => 'special_offer','shift' => 0],
+    // Sticker variants — 8 different colors
+    ['type' => 'sticker', 'border' => 'maroon',   'label' => 'Maroon + Free Delivery',   'sticker' => 'free_delivery', 'shift' => 0],
+    ['type' => 'sticker', 'border' => 'navy',     'label' => 'Navy + Best Seller',       'sticker' => 'best_seller',   'shift' => 0],
+    ['type' => 'sticker', 'border' => 'forest',   'label' => 'Forest + Special Offer',   'sticker' => 'special_offer', 'shift' => 0],
+    ['type' => 'sticker', 'border' => 'purple',   'label' => 'Purple + Best Deal',       'sticker' => 'best_deal',     'shift' => 0],
+    ['type' => 'sticker', 'border' => 'charcoal', 'label' => 'Charcoal + Best Quality',  'sticker' => 'best_quality',  'shift' => 0],
+    ['type' => 'sticker', 'border' => 'rust',     'label' => 'Rust + Free Delivery',     'sticker' => 'free_delivery', 'shift' => 0],
+    ['type' => 'sticker', 'border' => 'pink',     'label' => 'Pink + Best Seller',       'sticker' => 'best_seller',   'shift' => 0],
+    ['type' => 'sticker', 'border' => 'black',    'label' => 'Black + Special Offer',    'sticker' => 'special_offer', 'shift' => 0],
+
+    // Frame shift variants
+    ['type' => 'shift', 'border' => 'teal',    'label' => 'Teal Left Shift',    'sticker' => null, 'shift' => -60],
+    ['type' => 'shift', 'border' => 'charcoal','label' => 'Charcoal Right Shift','sticker' => null, 'shift' => 60],
 ];
+
 // ---- Border colors ----
 $colors = [
-    'darkred'   => [121, 2,   5  ],
-    'navy'      => [0,   0,   128],
-    'forest'    => [20,  83,  45 ],
-    'black'     => [0,   0,   0  ],
-    'charcoal'  => [30,  30,  30 ],
-    'purple'    => [88,  28,  135],
-    'teal'      => [13,  148, 136],
-    'rust'      => [180, 60,  20 ],
-    'pink'      => [190, 24,  93 ],
-    'lightgray' => [240, 240, 240],
+    'maroon'  => [128, 0,   0  ],
+    'navy'    => [0,   0,   128],
+    'forest'  => [20,  83,  45 ],
+    'white'   => [255, 255, 255],
+    'purple'  => [88,  28,  135],
+    'charcoal'=> [30,  30,  30 ],
+    'teal'    => [13,  148, 136],
+    'rust'    => [180, 60,  20 ],
+    'pink'    => [190, 24,  93 ],
+    'black'   => [0,   0,   0  ],
 ];
+
 // ---- Process each variant ----
 $generatedFiles = [];
 
@@ -294,3 +260,4 @@ function cleanupOldSessions(): void {
 if (rand(1, 5) === 1) {
     cleanupOldSessions();
 }
+
